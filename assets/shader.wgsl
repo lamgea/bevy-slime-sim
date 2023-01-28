@@ -1,23 +1,23 @@
-[[group(0), binding(0)]]
+@group(0) @binding(0)
 var texture: texture_storage_2d<rgba8unorm, read_write>;
 
 struct Constants {
-    width: u32;
-    height: u32;
-    agent_num: u32;
+    width: u32,
+    height: u32,
+    agent_num: u32,
 };
-[[group(0), binding(1)]]
+@group(0) @binding(1)
 var<uniform> constants: Constants;
 
 struct AgentSetting {
-    move_speed: f32;
-    fade_speed: f32;
-    diffuse_speed: f32;
-    sensor_size: u32;
-    sensor_distance: f32;
-    turing_speed: f32;
+    move_speed: f32,
+    fade_speed: f32,
+    diffuse_speed: f32,
+    sensor_size: u32,
+    sensor_distance: f32,
+    turing_speed: f32,
 };
-[[group(0), binding(3)]]
+@group(0) @binding(3)
 var<uniform> agent_settings: AgentSetting;
 
 let PI: f32 = 3.141592653589793;
@@ -38,14 +38,14 @@ fn hashf(x: u32) -> f32 {
 }
 
 struct Agent {
-    position: vec2<f32>;
-    radian: f32;
+    position: vec2<f32>,
+    radian: f32,
 };
 
 struct Agents {
-    agents: array<Agent>;
+    agents: array<Agent>,
 };
-[[group(0), binding(2)]]
+@group(0) @binding(2)
 var<storage, read_write> agents: Agents;
 
 fn lerp(v0: vec4<f32>, v1: vec4<f32>, t: f32) -> vec4<f32> {
@@ -170,8 +170,8 @@ fn sense_sector(agent: Agent, sensor_radian_range: vec2<f32>) -> f32 {
     return sum;
 }
 
-[[stage(compute), workgroup_size(16, 1, 1)]]
-fn update([[builtin(global_invocation_id)]] id: vec3<u32>) {
+@compute @workgroup_size(16, 1, 1)
+fn update(@builtin(global_invocation_id) id: vec3<u32>) {
     if (id.x >= constants.agent_num) { return; }
 
     let width = f32(constants.width);
@@ -228,8 +228,8 @@ fn update([[builtin(global_invocation_id)]] id: vec3<u32>) {
     textureStore(texture, vec2<i32>(new_position), vec4<f32>(1.))
 }
 
-[[stage(compute), workgroup_size(8, 8, 1)]]
-fn update_trail_map([[builtin(global_invocation_id)]] id: vec3<u32>) {
+@compute @workgroup_size(8, 8, 1)
+fn update_trail_map(@builtin(global_invocation_id) id: vec3<u32>) {
     let pos = vec2<i32>(id.xy);
     let value = textureLoad(texture, pos);
 
